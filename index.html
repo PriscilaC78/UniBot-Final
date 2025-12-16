@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniBot - UNCAUS</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- TEMA UNCAUS (TU DISEÑO ORIGINAL) --- */
+        :root {
+            --color-uncaus-azul: #004e8d;
+            --color-uncaus-verde: #86bc25;
+            --color-fondo: #ffffff; /* Fondo blanco para el widget */
+            --color-texto: #333;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-fondo);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Importante para que no salga barra de scroll doble */
+        }
+
+        .chat-container {
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 1. CABECERA AZUL */
+        .header {
+            background: var(--color-uncaus-azul);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px; /* Altura ajustada */
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-left: 10px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 15px;
+            margin-right: 5px;
+        }
+
+        .header-icons span {
+            cursor: pointer;
+            opacity: 0.8;
+            font-size: 20px;
+        }
+        .header-icons span:hover { opacity: 1; }
+
+        /* 2. ÁREA DEL ROBOTITO */
+        .welcome-area {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border: 3px solid var(--color-uncaus-verde);
+            border-radius: 50%;
+            margin: 0 auto 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Tu imagen del robot */
+        .avatar-circle img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .bot-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-uncaus-azul);
+            margin-bottom: 5px;
+        }
+
+        .welcome-text {
+            font-size: 15px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* 3. HISTORIAL DE CHAT */
+        .chat-history {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: #f8f9fa;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .bot-msg {
+            background-color: #e9e9eb;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        
+        /* Enlaces en azul dentro del mensaje */
+        .bot-msg a { color: var(--color-uncaus-azul); font-weight: bold; text-decoration: none; }
+
+        .user-msg {
+            background-color: var(--color-uncaus-azul);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        /* 4. INPUT Y BOTÓN VERDE */
+        .input-area {
+            padding: 15px;
+            background: white;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+
+        .input-wrapper {
+            background-color: #f0f2f5;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            padding: 5px 15px;
+            width: 100%;
+        }
+
+        input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            background-color: var(--color-uncaus-verde);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            background-color: #76a81e;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="header">
+        <div class="header-title">UniBot</div>
+        <div class="header-icons">
+            <span class="material-icons">remove</span>
+            <span class="material-icons" onclick="location.reload()" title="Reiniciar">refresh</span>
+            <span class="material-icons" onclick="window.parent.postMessage('cerrar', '*')" style="cursor: pointer;">close</span>
+        </div>
+    </div>
+
+    <div id="welcomeScreen" class="welcome-area">
+        <div class="avatar-circle">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot">
+        </div>
+        <div class="bot-name">UniBot</div>
+        <div class="welcome-text">
+            ¿En qué puedo ayudarte?
+        </div>
+    </div>
+
+    <div class="chat-history" id="cajaChat"></div>
+
+    <div class="input-area">
+        <div class="input-wrapper">
+            <input type="text" id="inputUsuario" placeholder="Escribe tu consulta..." onkeypress="teclaPresionada(event)">
+            <button class="send-btn" onclick="enviarMensaje()">
+                <span class="material-icons" style="font-size: 20px;">send</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function enviarMensaje() {
+        const input = document.getElementById('inputUsuario');
+        const texto = input.value.trim();
+        
+        if (!texto) return;
+
+        // 1. Mostrar mensaje del usuario
+        agregarMensaje(texto, 'user-msg');
+        input.value = '';
+
+        // Ocultar bienvenida al primer mensaje
+        document.getElementById('welcomeScreen').style.display = 'none';
+
+        try {
+            // 2. Mostrar "Pensando..."
+            const indicadorId = agregarMensaje("...", 'bot-msg', true);
+
+            // ==========================================
+            // CONEXIÓN A LA NUBE (RENDER)
+            // ==========================================
+            const respuesta = await fetch('https://unibot-uncaus.onrender.com/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje: texto })
+            });
+            
+            const datos = await respuesta.json();
+            
+            // 3. Borrar "..." y poner respuesta real
+            const indicador = document.getElementById(indicadorId);
+            if(indicador) indicador.remove();
+            
+            agregarMensaje(datos.respuesta, 'bot-msg');
+
+        } catch (error) {
+            agregarMensaje("Error de conexión. Intenta de nuevo.", 'bot-msg');
+        }
+    }
+
+    function agregarMensaje(texto, clase, esTemp = false) {
+        const div = document.createElement('div');
+        div.className = `message ${clase}`;
+        div.innerHTML = texto;
+        if(esTemp) div.id = 'temp-' + Date.now();
+        
+        const chatBox = document.getElementById('cajaChat');
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return div.id;
+    }
+
+    function teclaPresionada(e) {
+        if (e.key === 'Enter') enviarMensaje();
+    }
+</script>
+
+</body>
+</html>

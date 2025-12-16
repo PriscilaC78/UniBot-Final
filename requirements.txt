@@ -1,0 +1,12 @@
+flask
+flask-cors
+gunicorn
+langchain
+langchain-community
+langchain-huggingface
+langchain-chroma
+langchain-groq
+chromadb
+pypdf
+python-dotenv
+sentence-transformers
